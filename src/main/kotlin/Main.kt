@@ -11,18 +11,19 @@ class Main : PApplet() {
 
     override fun setup() {
         repeat(100) {
-            balls.add(Ball(random(width.toFloat()), random(height.toFloat()), 10f))
+            val randomX = random(width.toFloat())
+            val randomY = random(height.toFloat())
+            val randomR = random(5f, 10f)
+            balls.add(Ball(randomX, randomY, randomR))
         }
     }
 
     override fun draw() {
         background(0)
-        balls.forEach {
-            it.render(this)
-        }
+        balls.forEach { it.render(this) }
     }
 }
 
-fun main(args: Array<String>) {
+fun main() {
     PApplet.main(Main::class.java.name)
 }

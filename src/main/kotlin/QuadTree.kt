@@ -6,6 +6,7 @@ class QuadTree(val boundary: HitBox, val capacity: Int = 4) {
     var northEast: QuadTree? = null
     var southWest: QuadTree? = null
     var southEast: QuadTree? = null
+    val children = setOf(northWest, northEast, southWest, southEast)
     var subdivided = false
 
     constructor(x: Float, y: Float, w: Float, h: Float, capacity: Int = 4) : this(HitBox(x, y, w, h), capacity)
@@ -18,10 +19,7 @@ class QuadTree(val boundary: HitBox, val capacity: Int = 4) {
             return true
         }
         if (!subdivided) subdivide()
-        if (northWest?.insert(ball) == true) return true
-        if (northEast?.insert(ball) == true) return true
-        if (southWest?.insert(ball) == true) return true
-        if (southEast?.insert(ball) == true) return true
+        children.forEach { if (it?.insert(ball) == true) return true }
         return false
     }
 
@@ -43,10 +41,9 @@ class QuadTree(val boundary: HitBox, val capacity: Int = 4) {
             if (range.containsPoint(it.position)) ballsInRange.add(it)
         }
         if (!subdivided) return ballsInRange
-        northWest?.queryRange(range)?.let { ballsInRange.addAll(it) }
-        northEast?.queryRange(range)?.let { ballsInRange.addAll(it) }
-        southWest?.queryRange(range)?.let { ballsInRange.addAll(it) }
-        southEast?.queryRange(range)?.let { ballsInRange.addAll(it) }
+        children.forEach { child ->
+            child?.queryRange(range)?.let { ballsInRange.addAll(it) }
+        }
         return ballsInRange
     }
 }

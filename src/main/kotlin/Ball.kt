@@ -17,10 +17,8 @@ class Ball(val position: PVector, val radius: Float) {
     }
 
     fun render(canvas: PApplet) {
-        with(canvas) {
-            fill(255, 50f)
-            noStroke()
-            ellipse(position.x, position.y, radius, radius)
-        }
+        canvas.fill(255, 50f)
+        canvas.noStroke()
+        canvas.ellipse(position.x, position.y, radius, radius)
     }
 }
