@@ -10,8 +10,6 @@ class Ball(val position: PVector, val radius: Float) {
         return position.dist(point) < radius
     }
 
-    fun containsPoint(x: Float, y: Float) = this.containsPoint(PVector(x, y))
-
     fun intersectsBall(otherBall: Ball): Boolean {
         return position.dist(otherBall.position) < radius + otherBall.radius
     }

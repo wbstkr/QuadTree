@@ -1,16 +1,17 @@
 package io.github.wbstkr
 
+import processing.core.PApplet
+
 class QuadTree(val boundary: HitBox, val capacity: Int = 4) {
     val balls = mutableSetOf<Ball>()
     var northWest: QuadTree? = null
     var northEast: QuadTree? = null
     var southWest: QuadTree? = null
     var southEast: QuadTree? = null
-    val children = setOf(northWest, northEast, southWest, southEast)
+    val children get() = listOfNotNull(northWest, northEast, southWest, southEast)
     var subdivided = false
 
     constructor(x: Float, y: Float, w: Float, h: Float, capacity: Int = 4) : this(HitBox(x, y, w, h), capacity)
-    constructor(x: Float, y: Float, w: Float, h: Float) : this(HitBox(x, y, w, h))
 
     fun insert(ball: Ball): Boolean {
         if (!boundary.containsPoint(ball.position)) return false
@@ -19,7 +20,7 @@ class QuadTree(val boundary: HitBox, val capacity: Int = 4) {
             return true
         }
         if (!subdivided) subdivide()
-        children.forEach { if (it?.insert(ball) == true) return true }
+        children.forEach { if (it.insert(ball)) return true }
         return false
     }
 
@@ -27,10 +28,12 @@ class QuadTree(val boundary: HitBox, val capacity: Int = 4) {
         if (subdivided) return
         val newWidth = boundary.width / 2f
         val newHeight = boundary.height / 2f
-        northWest = QuadTree(boundary.upperLeft.x, boundary.upperLeft.y, newWidth, newHeight)
-        northEast = QuadTree(boundary.upperLeft.x + newWidth, boundary.upperLeft.y, newWidth, newHeight)
-        southWest = QuadTree(boundary.upperLeft.x, boundary.upperLeft.y + newHeight, newWidth, newHeight)
-        southEast = QuadTree(boundary.upperLeft.x + newWidth, boundary.upperLeft.y + newHeight, newWidth, newHeight)
+        val centerX = boundary.left + newWidth
+        val centerY = boundary.top + newHeight
+        northWest = QuadTree(boundary.left, boundary.top, newWidth, newHeight)
+        northEast = QuadTree(centerX, boundary.top, newWidth, newHeight)
+        southWest = QuadTree(boundary.left, centerY, newWidth, newHeight)
+        southEast = QuadTree(centerX, centerY, newWidth, newHeight)
         subdivided = true
     }
 
@@ -41,9 +44,12 @@ class QuadTree(val boundary: HitBox, val capacity: Int = 4) {
             if (range.containsPoint(it.position)) ballsInRange.add(it)
         }
         if (!subdivided) return ballsInRange
-        children.forEach { child ->
-            child?.queryRange(range)?.let { ballsInRange.addAll(it) }
-        }
+        children.forEach { ballsInRange.addAll(it.queryRange(range)) }
         return ballsInRange
+    }
+
+    fun render(canvas: PApplet) {
+        if (subdivided) children.forEach { it.render(canvas) }
+        else boundary.render(canvas)
     }
 }
