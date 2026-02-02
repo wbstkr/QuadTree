@@ -4,27 +4,29 @@ import processing.core.PApplet
 import processing.core.PVector
 
 class HitBox(val upperLeft: PVector, val dimensions: PVector) {
-    val width get() = dimensions.x
-    val height get() = dimensions.y
-    val left get() = upperLeft.x
-    val top get() = upperLeft.y
-    val right get() = left + width
-    val bottom get() = top + height
+    val w get() = dimensions.x
+    val h get() = dimensions.y
+    val l get() = upperLeft.x
+    val t get() = upperLeft.y
+    val r get() = l + w
+    val b get() = t + h
 
     constructor(x: Float, y: Float, w: Float, h: Float) : this(PVector(x, y), PVector(w, h))
 
     fun containsPoint(point: PVector): Boolean {
-        return point.x > left && point.y > top && point.x < right && point.y < bottom
+        return point.x > l && point.y > t && point.x < r && point.y < b
     }
 
     fun intersectsHitBox(otherHitBox: HitBox): Boolean {
-        return otherHitBox.left < right && otherHitBox.top < bottom && otherHitBox.right > left && otherHitBox.bottom > top
+        return otherHitBox.l < r && otherHitBox.t < b && otherHitBox.r > l && otherHitBox.b > t
     }
 
     fun render(canvas: PApplet) {
-        canvas.noFill()
-        canvas.stroke(255f, 0f, 0f)
-        canvas.strokeWeight(1f)
-        canvas.rect(left, top, width, height)
+        with(canvas) {
+            noFill()
+            stroke(255f, 0f, 0f)
+            strokeWeight(1f)
+            rect(l, t, w, h)
+        }
     }
 }

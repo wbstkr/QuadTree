@@ -26,13 +26,13 @@ class QuadTree(val boundary: HitBox, val capacity: Int = 4) {
 
     fun subdivide() {
         if (subdivided) return
-        val newWidth = boundary.width / 2f
-        val newHeight = boundary.height / 2f
-        val centerX = boundary.left + newWidth
-        val centerY = boundary.top + newHeight
-        northWest = QuadTree(boundary.left, boundary.top, newWidth, newHeight)
-        northEast = QuadTree(centerX, boundary.top, newWidth, newHeight)
-        southWest = QuadTree(boundary.left, centerY, newWidth, newHeight)
+        val newWidth = boundary.w / 2f
+        val newHeight = boundary.h / 2f
+        val centerX = boundary.l + newWidth
+        val centerY = boundary.t + newHeight
+        northWest = QuadTree(boundary.l, boundary.t, newWidth, newHeight)
+        northEast = QuadTree(centerX, boundary.t, newWidth, newHeight)
+        southWest = QuadTree(boundary.l, centerY, newWidth, newHeight)
         southEast = QuadTree(centerX, centerY, newWidth, newHeight)
         subdivided = true
     }

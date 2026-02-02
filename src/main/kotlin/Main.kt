@@ -1,6 +1,7 @@
 package io.github.wbstkr
 
 import processing.core.PApplet
+import processing.core.PVector
 
 private const val NUM_OF_BALLS = 5000
 private const val MOUSE_BOUNDARY_RADIUS = 50f
@@ -14,22 +15,39 @@ class Main : PApplet() {
     }
 
     override fun setup() {
-        quadTree = QuadTree(0f, 0f, width.toFloat(), height.toFloat())
         repeat(NUM_OF_BALLS) {
             val randomX = random(width.toFloat())
             val randomY = random(height.toFloat())
-            val randomR = random(10f, 20f)
-            val newBall = Ball(randomX, randomY, randomR)
+            val randomD = random(10f, 20f)
+            val newBall = Ball(randomX, randomY, randomD)
             balls.add(newBall)
-            quadTree.insert(newBall)
         }
     }
 
     override fun draw() {
+        quadTree = QuadTree(0f, 0f, width.toFloat(), height.toFloat())
+
         background(0)
+
+        balls.forEach {
+            it.update(this)
+            quadTree.insert(it)
+        }
+        balls.forEach { ball ->
+            val ballHitBox = HitBox(
+                ball.position.x - ball.radius, ball.position.y - ball.radius, ball.diameter, ball.diameter
+            )
+            val ballsToCheck = quadTree.queryRange(ballHitBox)
+            ballsToCheck.forEach { otherBall -> ball.collide(otherBall) }
+        }
+
         balls.forEach { it.render(this) }
         quadTree.render(this)
 
+        mouseInteraction()
+    }
+
+    private fun mouseInteraction() {
         val mouseHitBox = HitBox(
             mouseX - MOUSE_BOUNDARY_RADIUS,
             mouseY - MOUSE_BOUNDARY_RADIUS,
@@ -38,9 +56,11 @@ class Main : PApplet() {
         )
         quadTree.queryRange(mouseHitBox).forEach {
             noFill()
-            stroke(255f)
+            if (it.containsPoint(PVector(mouseX.toFloat(), mouseY.toFloat()))) {
+                stroke(0f, 255f, 0f)
+            } else stroke(255f)
             strokeWeight(1f)
-            ellipse(it.position.x, it.position.y, it.radius, it.radius)
+            ellipse(it.position.x, it.position.y, it.diameter, it.diameter)
         }
         mouseHitBox.render(this)
     }
