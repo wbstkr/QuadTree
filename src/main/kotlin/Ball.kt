@@ -4,7 +4,7 @@ import processing.core.PApplet
 import processing.core.PVector
 
 class Ball(
-    val position: PVector, val diameter: Float, var velocity: PVector = PVector.random2D()
+    val position: PVector, val diameter: Float, var velocity: PVector = PVector.random2D().div(2f)
 ) {
     val radius get() = diameter / 2f
 

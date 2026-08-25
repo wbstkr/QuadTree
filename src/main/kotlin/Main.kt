@@ -3,7 +3,7 @@ package io.github.wbstkr
 import processing.core.PApplet
 import processing.core.PVector
 
-private const val NUM_OF_BALLS = 5000
+private const val NUM_OF_BALLS = 1000
 private const val MOUSE_BOUNDARY_RADIUS = 50f
 
 class Main : PApplet() {
